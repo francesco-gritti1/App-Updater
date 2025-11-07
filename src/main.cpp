@@ -263,6 +263,7 @@ void check_packages ()
         else
         {
             tracked ["installed"] = false;
+            tracked ["update"] = false;
             tracked ["installed_version"] = "0";
             std::cout << "Package " << name << " not installed." << std::endl;
         }

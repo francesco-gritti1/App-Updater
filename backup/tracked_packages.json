@@ -8,7 +8,7 @@
             "last_available_commit": "55c265f1172bb4bec93757a74de0741884894461",
             "name": "gtk-demoapp",
             "repo_name": "gtk_demoapp",
-            "update": true
+            "update": false
         },
         {
             "gitlink": "https://github.com/francesco-gritti1/demo_update/",
