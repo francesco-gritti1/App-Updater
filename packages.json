@@ -1,0 +1,16 @@
+
+{
+"packages": [
+    {
+        "name" : "gtk-demoapp",
+        "gitlink" : "https://github.com/francesco-gritti1/gtk_demoapp/",
+        "repo_name": "gtk_demoapp"
+    },
+
+    {
+        "name" : "demo-update",
+        "gitlink" : "https://github.com/francesco-gritti1/demo_update/",
+        "repo_name": "demo_update"
+    }
+]
+}

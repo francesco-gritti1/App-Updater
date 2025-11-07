@@ -1,0 +1,147 @@
+#include <gtk/gtk.h>
+#include <json-glib/json-glib.h>
+
+
+// Dummy lista JSON come stringa (in un'app reale la caricheresti da file o rete)
+const char *json_data = "["
+    "{\"name\":\"Servizio A\", \"version\":\"1.2.3\", \"new_version\":true, \"installed\":true},"
+    "{\"name\":\"Servizio B\", \"version\":\"2.4.0\", \"new_version\":false, \"installed\":true},"
+    "{\"name\":\"Servizio C\", \"version\":\"\", \"new_version\":false, \"installed\":false}"
+"]";
+
+
+
+
+// Callback per pulsanti Aggiorna/Installa (dummy)
+static void on_service_button_clicked(GtkWidget *button, gpointer name) {
+    g_print("%s clicked\n", (char*)name);
+}
+
+static GtkWidget* create_service_row(JsonNode *service_node) {
+    JsonObject *service_obj = json_node_get_object(service_node);
+    const char *name = json_object_get_string_member(service_obj, "name");
+    const char *version = json_object_get_string_member(service_obj, "version");
+    gboolean new_version = json_object_get_boolean_member(service_obj, "new_version");
+    gboolean installed = json_object_get_boolean_member(service_obj, "installed");
+
+    // Box orizzontale per riga
+    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_widget_set_margin_top(hbox, 5);
+    gtk_widget_set_margin_bottom(hbox, 5);
+
+    // VBox per i testi
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+
+    // Nome servizio: label con font più grande
+    GtkWidget *name_label = gtk_label_new(NULL);
+    gchar *markup_name = g_strdup_printf("<span font_desc='20.0'>%s</span>", name);
+    gtk_label_set_markup(GTK_LABEL(name_label), markup_name);
+    g_free(markup_name);
+    gtk_label_set_xalign(GTK_LABEL(name_label), 0);
+    gtk_box_pack_start(GTK_BOX(vbox), name_label, FALSE, FALSE, 0);
+
+    // Label versione corrente
+    gchar *version_text = g_strdup_printf("Versione corrente: %s", version && *version ? version : "N/A");
+    GtkWidget *version_label = gtk_label_new(version_text);
+    g_free(version_text);
+    gtk_label_set_xalign(GTK_LABEL(version_label), 0);
+    gtk_box_pack_start(GTK_BOX(vbox), version_label, FALSE, FALSE, 0);
+
+    // Label stato aggiornamento
+    const char *status_text = NULL;
+    if (!installed) {
+        status_text = "Pacchetto non installato";
+    } else if (new_version) {
+        status_text = "Nuova versione disponibile";
+    } else {
+        status_text = "Pacchetto aggiornato";
+    }
+    GtkWidget *status_label = gtk_label_new(status_text);
+    gtk_label_set_xalign(GTK_LABEL(status_label), 0);
+    gtk_box_pack_start(GTK_BOX(vbox), status_label, FALSE, FALSE, 0);
+
+    gtk_box_pack_start(GTK_BOX(hbox), vbox, TRUE, TRUE, 0);
+
+    // Pulsante Aggiorna o Installa se serve
+    if (!installed || new_version) {
+        const char *btn_label = new_version ? "Aggiorna" : "Installa";
+        GtkWidget *btn = gtk_button_new_with_label(btn_label);
+
+        // Imposto l'allineamento verticale in alto (start)
+        gtk_widget_set_valign(btn, GTK_ALIGN_START);
+        // Non fare espandere il pulsante
+        gtk_widget_set_hexpand(btn, FALSE);
+        gtk_widget_set_vexpand(btn, FALSE);
+
+        gtk_box_pack_start(GTK_BOX(hbox), btn, FALSE, FALSE, 0);
+
+        // Collega callback (dummy per ora)
+        g_signal_connect(btn, "clicked", G_CALLBACK(on_service_button_clicked), (gpointer)name);
+    }
+
+    return hbox;
+}
+
+static void settings_button_clicked(GtkWidget *widget, gpointer data) {
+    g_print("Settings button clicked\n");
+}
+
+static void refresh_button_clicked(GtkWidget *widget, gpointer data) {
+    g_print("Refresh button clicked\n");
+}
+
+static void activate(GtkApplication *app, gpointer user_data) {
+    GtkWidget *window = gtk_application_window_new(app);
+    gtk_window_set_title(GTK_WINDOW(window), "Servizi");
+    gtk_window_set_default_size(GTK_WINDOW(window), 800, 500);
+
+    // Box verticale principale
+    GtkWidget *vbox_main = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    gtk_container_add(GTK_CONTAINER(window), vbox_main);
+
+    // ButtonBox per i pulsanti refresh e settings a destra
+    GtkWidget *button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+    gtk_button_box_set_layout(GTK_BUTTON_BOX(button_box), GTK_BUTTONBOX_END);
+    gtk_box_pack_start(GTK_BOX(vbox_main), button_box, FALSE, FALSE, 5);
+
+    // Pulsante Refresh con icona
+    GtkWidget *refresh_btn = gtk_button_new_from_icon_name("view-refresh", GTK_ICON_SIZE_BUTTON);
+    g_signal_connect(refresh_btn, "clicked", G_CALLBACK(refresh_button_clicked), NULL);
+    gtk_container_add(GTK_CONTAINER(button_box), refresh_btn);
+
+    // Pulsante Settings con icona
+    GtkWidget *settings_btn = gtk_button_new_from_icon_name("emblem-system", GTK_ICON_SIZE_BUTTON);
+    g_signal_connect(settings_btn, "clicked", G_CALLBACK(settings_button_clicked), NULL);
+    gtk_container_add(GTK_CONTAINER(button_box), settings_btn);
+
+    // ListBox per i servizi
+    GtkWidget *listbox = gtk_list_box_new();
+    gtk_box_pack_start(GTK_BOX(vbox_main), listbox, TRUE, TRUE, 0);
+
+    // Parsing JSON dati servizi
+    JsonParser *parser = json_parser_new();
+    GError *error = NULL;
+    json_parser_load_from_data(parser, json_data, -1, &error);
+    if (error) {
+        g_warning("Errore parsing JSON: %s", error->message);
+        g_error_free(error);
+        return;
+    }
+
+    JsonArray *services_array = json_node_get_array(json_parser_get_root(parser));
+    for (guint i = 0; i < json_array_get_length(services_array); i++) {
+        JsonNode *node = json_array_get_element(services_array, i);
+        GtkWidget *row = create_service_row(node);
+        gtk_list_box_insert(GTK_LIST_BOX(listbox), row, -1);
+    }
+    gtk_widget_show_all(window);
+    g_object_unref(parser);
+}
+
+int main(int argc, char **argv) {
+    GtkApplication *app = gtk_application_new("com.example.servizi", G_APPLICATION_FLAGS_NONE);
+    g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
+    int status = g_application_run(G_APPLICATION(app), argc, argv);
+    g_object_unref(app);
+    return status;
+}
