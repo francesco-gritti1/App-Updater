@@ -22,7 +22,7 @@ ifeq ($(config),debug)
   endif
   RESCOMP = windres
   TARGETDIR = bin/Debug
-  TARGET = $(TARGETDIR)/App-Updaer
+  TARGET = $(TARGETDIR)/ui
   OBJDIR = bin/obj/Debug
   DEFINES += -DDEBUG
   INCLUDES +=
@@ -58,7 +58,7 @@ ifeq ($(config),release)
   endif
   RESCOMP = windres
   TARGETDIR = bin/Release
-  TARGET = $(TARGETDIR)/App-Updaer
+  TARGET = $(TARGETDIR)/ui
   OBJDIR = bin/obj/Release
   DEFINES += -DNDEBUG
   INCLUDES +=
@@ -83,7 +83,7 @@ all: prebuild prelink $(TARGET)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/main.o \
+	$(OBJDIR)/main_graphics.o \
 	$(OBJDIR)/utils.o \
 
 RESOURCES := \
@@ -96,7 +96,7 @@ ifeq (.exe,$(findstring .exe,$(ComSpec)))
 endif
 
 $(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES) | $(TARGETDIR)
-	@echo Linking App-Updaer
+	@echo Linking ui
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -119,7 +119,7 @@ else
 endif
 
 clean:
-	@echo Cleaning App-Updaer
+	@echo Cleaning ui
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -143,7 +143,7 @@ else
 $(OBJECTS): | $(OBJDIR)
 endif
 
-$(OBJDIR)/main.o: src/main.cpp
+$(OBJDIR)/main_graphics.o: src/main_graphics.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/utils.o: src/utils.cpp

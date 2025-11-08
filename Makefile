@@ -10,12 +10,14 @@ endif
 
 ifeq ($(config),debug)
   App_Updaer_config = debug
+  ui_config = debug
 endif
 ifeq ($(config),release)
   App_Updaer_config = release
+  ui_config = release
 endif
 
-PROJECTS := App-Updaer
+PROJECTS := App-Updaer ui
 
 .PHONY: all clean help $(PROJECTS) 
 
@@ -27,8 +29,15 @@ ifneq (,$(App_Updaer_config))
 	@${MAKE} --no-print-directory -C . -f App-Updaer.make config=$(App_Updaer_config)
 endif
 
+ui:
+ifneq (,$(ui_config))
+	@echo "==== Building ui ($(ui_config)) ===="
+	@${MAKE} --no-print-directory -C . -f ui.make config=$(ui_config)
+endif
+
 clean:
 	@${MAKE} --no-print-directory -C . -f App-Updaer.make clean
+	@${MAKE} --no-print-directory -C . -f ui.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -41,5 +50,6 @@ help:
 	@echo "   all (default)"
 	@echo "   clean"
 	@echo "   App-Updaer"
+	@echo "   ui"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"
