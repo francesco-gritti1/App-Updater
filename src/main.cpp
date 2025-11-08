@@ -150,6 +150,7 @@ void update_packages ()
                 {
                     package ["installed_version"] = version_opt.value ();
                     package ["installed"] = true;
+                    package ["update"] = false;
                 }
             }
         }
@@ -247,6 +248,7 @@ void check_packages ()
             {
                 tracked ["update"] = true;
             }
+            else tracked ["update"] = false;
         }
         else {
             std::cerr << "Error fetching commit for repo " << gitlink << std::endl;

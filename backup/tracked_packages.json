@@ -13,12 +13,12 @@
         {
             "gitlink": "https://github.com/francesco-gritti1/demo_update/",
             "installed": true,
-            "installed_commit": "dc81ebcf3fae778f6621e186d8f0bacc4589ecc4",
-            "installed_version": "1.3",
-            "last_available_commit": "dc81ebcf3fae778f6621e186d8f0bacc4589ecc4",
+            "installed_commit": "b24605b2664424129950159d16136071d055f41a",
+            "installed_version": "1.5",
+            "last_available_commit": "b24605b2664424129950159d16136071d055f41a",
             "name": "demo-update",
             "repo_name": "demo_update",
-            "update": true
+            "update": false
         }
     ]
 }
