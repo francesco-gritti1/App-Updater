@@ -163,6 +163,45 @@ void update_packages ()
 
 
 
+void update_pkg_named (std::string name)
+{
+    std::ifstream tracked_file(TRACKED_PKG_FILEPATH);
+    json json_tracked = json::parse(tracked_file);
+
+    for (auto& package: json_tracked["packages"])
+    {
+
+        if (package ["update"] == true && package["name"] == name)
+        {
+            std::cout << "update package " << package["name"] << std::endl;
+            int retcode = execute_install ("./install.sh", package["gitlink"], package["repo_name"], package["name"]);
+            std::cout << "retcode " << (int)retcode << std::endl;
+            
+            if (retcode == 0)
+            {
+                package ["installed_commit"] = std::string (package["last_available_commit"]);
+
+                // update version
+                auto version_opt = get_installed_package_version (package["name"]);
+                if (version_opt)
+                {
+                    package ["installed_version"] = version_opt.value ();
+                    package ["installed"] = true;
+                    package ["update"] = false;
+                }
+            }
+            break;
+        }
+    }
+    // update json file
+    std::ofstream out_file (TRACKED_PKG_FILEPATH);
+    out_file << std::setw(4) << json_tracked << std::endl;
+}
+
+
+
+
+
 void install_missing ()
 {
     std::ifstream tracked_file(TRACKED_PKG_FILEPATH);

@@ -3,9 +3,9 @@
         {
             "gitlink": "https://github.com/francesco-gritti1/gtk_demoapp/",
             "installed": true,
-            "installed_commit": "55c265f1172bb4bec93757a74de0741884894461",
-            "installed_version": "1.2",
-            "last_available_commit": "55c265f1172bb4bec93757a74de0741884894461",
+            "installed_commit": "099fe95f301a38c45e66d1797809a19321e661ef",
+            "installed_version": "1.8",
+            "last_available_commit": "099fe95f301a38c45e66d1797809a19321e661ef",
             "name": "gtk-demoapp",
             "repo_name": "gtk_demoapp",
             "update": false
@@ -13,12 +13,12 @@
         {
             "gitlink": "https://github.com/francesco-gritti1/demo_update/",
             "installed": true,
-            "installed_commit": "b24605b2664424129950159d16136071d055f41a",
-            "installed_version": "1.5",
-            "last_available_commit": "509ae07b0c08ae74e0b940cc594497eb76892c53",
+            "installed_commit": "d15b00b5d427b21359fc812d71fcfa6697f1f2ce",
+            "installed_version": "2.1",
+            "last_available_commit": "d15b00b5d427b21359fc812d71fcfa6697f1f2ce",
             "name": "demo-update",
             "repo_name": "demo_update",
-            "update": true
+            "update": false
         }
     ]
 }

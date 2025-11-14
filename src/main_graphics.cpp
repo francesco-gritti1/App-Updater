@@ -14,6 +14,10 @@
 #include <fstream>
 #include <stdexcept>
 #include <array>
+#include <format>
+
+
+using std::cout, std::format;
 
 #include "utils.h"
 #include "json.h"
@@ -78,7 +82,13 @@ void properties_button_clicked (GtkButton* button, gpointer data)
 
 void update_button_clicked (GtkButton* button, gpointer data)
 {   
-    printf ("Button clicked\n");
+    int i=(int)(intptr_t)data;
+    cout << format("Button clicked for pkg {}\n", pkg_names[i]);
+
+    update_pkg_named (pkg_names[i]);
+    check_packages ();
+    clear_container (GTK_CONTAINER(list_box));
+    add_packages (list_box);
 }
 
 
@@ -93,6 +103,7 @@ void add_packages (GtkListBox* listbox)
 
     pkg_names.clear ();
 
+    int i=0;
     for (auto& package: json_tracked["packages"])
     {   
         std::string version = package["installed_version"];
@@ -115,7 +126,7 @@ void add_packages (GtkListBox* listbox)
         update_label = GTK_WIDGET (gtk_builder_get_object(builder, "update_label"));
         button = GTK_WIDGET (gtk_builder_get_object(builder, "button"));
 
-        g_signal_connect (button, "clicked", G_CALLBACK(update_button_clicked), NULL);
+        g_signal_connect (button, "clicked", G_CALLBACK(update_button_clicked), (gpointer)(intptr_t)(i));
                 
 
         gtk_label_set_text (GTK_LABEL (version_label), version.c_str());
@@ -142,6 +153,7 @@ void add_packages (GtkListBox* listbox)
         gtk_container_add (GTK_CONTAINER (listbox), GTK_WIDGET (grid));
 
         g_object_unref(builder);
+        i++;
     }
 }
 

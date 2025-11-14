@@ -15,6 +15,7 @@ int execute_install (const std::string& script_path, const std::string& gitlink,
 std::optional<std::string> get_installed_package_version (const std::string& package_name);
 std::optional<std::string> git_exec_ls_remote (const std::string& repo_url);
 void update_packages ();
+void update_pkg_named (std::string name);
 void install_missing ();
 void check_packages ();
 void check_fs ();
