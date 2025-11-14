@@ -15,10 +15,10 @@
             "installed": true,
             "installed_commit": "b24605b2664424129950159d16136071d055f41a",
             "installed_version": "1.5",
-            "last_available_commit": "b24605b2664424129950159d16136071d055f41a",
+            "last_available_commit": "509ae07b0c08ae74e0b940cc594497eb76892c53",
             "name": "demo-update",
             "repo_name": "demo_update",
-            "update": false
+            "update": true
         }
     ]
 }

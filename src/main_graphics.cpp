@@ -30,9 +30,19 @@ namespace fs = std::filesystem;
 
 
 static GtkListBox* list_box;
+static std::vector <std::string> pkg_names;
 
 
 void add_packages (GtkListBox* listbox);
+
+void destroy_child(GtkWidget *widget, gpointer data) 
+{
+    gtk_widget_destroy(widget);
+}
+void clear_container(GtkContainer *container) 
+{
+    gtk_container_foreach(container, (GtkCallback)destroy_child, NULL);
+}
 
 
 
@@ -44,6 +54,7 @@ extern "C" {
 
 void refresh_button_clicked (GtkButton* button, gpointer data);
 void properties_button_clicked (GtkButton* button, gpointer data);
+void update_button_clicked (GtkButton* button, gpointer data);
 
 #ifdef __cplusplus
 }
@@ -56,6 +67,7 @@ void refresh_button_clicked (GtkButton* button, gpointer data)
   printf ("Refresh\n");
 
   check_packages ();
+  clear_container (GTK_CONTAINER(list_box));
   add_packages (list_box);
 }
 
@@ -64,7 +76,10 @@ void properties_button_clicked (GtkButton* button, gpointer data)
   printf ("Settings\n");
 }
 
-
+void update_button_clicked (GtkButton* button, gpointer data)
+{   
+    printf ("Button clicked\n");
+}
 
 
 
@@ -76,8 +91,14 @@ void add_packages (GtkListBox* listbox)
     std::ifstream tracked_file(TRACKED_PKG_FILEPATH);
     json json_tracked = json::parse(tracked_file);
 
+    pkg_names.clear ();
+
     for (auto& package: json_tracked["packages"])
     {   
+        std::string version = package["installed_version"];
+        std::string name_str = package["name"];
+        pkg_names.push_back (name_str);
+
         GtkWidget *name, *grid, *version_label, *update_label, *button;
         GtkBuilder* builder = gtk_builder_new();
         GError *error = NULL;
@@ -93,10 +114,9 @@ void add_packages (GtkListBox* listbox)
         version_label = GTK_WIDGET (gtk_builder_get_object(builder, "version_label"));
         update_label = GTK_WIDGET (gtk_builder_get_object(builder, "update_label"));
         button = GTK_WIDGET (gtk_builder_get_object(builder, "button"));
-                
 
-        std::string version = package["installed_version"];
-        std::string name_str = package["name"];
+        g_signal_connect (button, "clicked", G_CALLBACK(update_button_clicked), NULL);
+                
 
         gtk_label_set_text (GTK_LABEL (version_label), version.c_str());
         gtk_label_set_text (GTK_LABEL (name), name_str.c_str());

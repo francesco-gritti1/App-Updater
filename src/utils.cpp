@@ -208,6 +208,7 @@ void check_packages ()
 
     std::vector <std::string> tracked_packages_name;
 
+
     for (const auto& package: json_tracked["packages"])
     {
        tracked_packages_name.push_back (package["name"]);
